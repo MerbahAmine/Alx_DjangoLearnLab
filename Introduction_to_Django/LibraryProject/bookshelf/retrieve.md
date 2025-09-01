@@ -1,4 +1,7 @@
-# Retrieve and display all attributes of the book
+# Retrieve and display all attributes of the book using Book.objects.get
+book = Book.objects.get(title="1984")
+
+# Display attributes
 print(vars(book))
 
 # Expected output:
