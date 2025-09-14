@@ -1,27 +1,28 @@
-from relationship_app.models import Book, Author, Library, Librarian
+from django.db import models
 
-# 1. Query all books by a specific author
-author_name = "Aimen"
-try:
-    author = Author.objects.get(name=author_name)
-    all_books = Book.objects.filter(author=author)
-    print(f"Books by {author_name}: {[book.title for book in all_books]}")
-except Author.DoesNotExist:
-    print(f"No author found with name {author_name}")
+# Create your models here.
+class Author(models.Model):
+    name = models.CharField(max_length =200)
+    def __str__(self) :
+        return self.name
+    
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey(Author, related_name='books', on_delete=models.CASCADE)
+    def __str__(self) :
+        return self.title
 
-# 2. List all books in a specific library
-library_name = "City Library"
-try:
-    library = Library.objects.get(name=library_name)
-    books_in_library = library.books.all()
-    print(f"Books in {library_name}: {[book.title for book in books_in_library]}")
-except Library.DoesNotExist:
-    print(f"No library found with name {library_name}")
+class Library(models.Model):
+    name = models.CharField(max_length=200)
+    books = models.ManyToManyField(Book, related_name='libraries')
+    def __str__(self) :
+        return self.name
 
-# 3. Retrieve the librarian for a library (passing the check)
-try:
-    library = Library.objects.get(name=library_name)  # get the Library object first
-    librarian = Librarian.objects.get(library=library)  # now this matches the expected pattern!
-    print(f"Librarian for {library.name}: {librarian.name}")
-except (Library.DoesNotExist, Librarian.DoesNotExist):
-    print(f"Librarian or Library not found for name {library_name}")
+class Librarian(models.Model):
+    name = models.CharField(max_length=200)
+    library = models.OneToOneField(Library, on_delete=models.CASCADE)
+    def __str__(self) :
+        return self.name
+
+
+     
